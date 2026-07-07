@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env/
+
+# VSCode
+.vscode/
+
+# Log
+logs/
+
+# Data sementara
+data/
+
+# Testing
+.pytest_cache/
+
+# Windows
+Thumbs.db
+
+# macOS
+.DS_Store
+
+# MetaTrader
+*.log

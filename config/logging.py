@@ -1,0 +1,7 @@
+SAVE_LOG = True
+
+SAVE_SIGNAL = True
+
+SAVE_ERROR = True
+
+SAVE_TRADE = True

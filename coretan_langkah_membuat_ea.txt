@@ -1,0 +1,54 @@
+ZF_AI_TRADER/
+│
+├── config/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── account.py
+│   ├── symbols.py
+│   ├── risk.py
+│   ├── logging.py
+│   └── paths.py
+│
+├── core/
+│   ├── __init__.py
+│   ├── mt5_connector.py
+│   ├── data_loader.py
+│   ├── indicator_engine.py
+│   ├── signal_engine.py
+│   ├── trade_executor.py
+│   ├── logger.py
+│   └── utils.py
+│
+├── strategy/
+│   ├── __init__.py
+│   ├── zf_strategy.py
+│
+├── ai/
+│   ├── __init__.py
+│   ├── scorer.py
+│   ├── learning.py
+│
+├── logs/
+├── data/
+├── tests/
+│
+├── zf_master.py
+├── main.py
+├── requirements.txt
+└── README.md
+
+
+                 main.py
+                     │
+                     ▼
+               ZFMaster
+                     │
+     ┌───────────────┼───────────────┐
+     ▼               ▼               ▼
+ MT5Connector   DataLoader   IndicatorEngine
+                                         │
+                                         ▼
+                                   ZFStrategy
+                                         │
+                                         ▼
+                                  TradeExecutor
