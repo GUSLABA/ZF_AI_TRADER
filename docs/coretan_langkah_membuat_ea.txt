@@ -52,3 +52,16 @@ ZF_AI_TRADER/
                                          │
                                          ▼
                                   TradeExecutor
+
+
+
+
+git config --global user.name "GUSLABA"
+
+git config --global user.email "agoeskonter@gmail.com"
+
+git config --global init.defaultBranch main
+
+git config --global core.autocrlf true
+
+git config --global credential.helper manager
