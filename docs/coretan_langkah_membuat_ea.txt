@@ -89,3 +89,15 @@ v0.1.0-stable
         └── AI Decision Engine
                 ↓
             v0.2.0
+
+
+Hubungkan run() agar benar-benar memanggil load_history() dan melakukan loop candle.
+Jalankan backtest pertama.
+Pastikan robot benar-benar membaca ±2 tahun data MT5.
+Baru kita aktifkan simulasi BUY/SELL.
+Setelah itu aktifkan TP/SL.
+Terakhir baru statistik dan report penuh.
+
+
+
+
