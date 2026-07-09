@@ -1,0 +1,330 @@
+========================================================
+ZF AI TRADER
+GIT CHEATSHEET
+Versi : 1.0
+========================================================
+
+========================================================
+1. CEK STATUS PROJECT
+========================================================
+
+git status
+
+Fungsi:
+- Melihat file yang berubah
+- Melihat file baru
+- Melihat apakah project bersih
+
+--------------------------------------------------------
+
+Jika muncul:
+
+nothing to commit, working tree clean
+
+Artinya:
+Project bersih dan aman.
+
+========================================================
+2. MELIHAT RIWAYAT COMMIT
+========================================================
+
+git log
+
+atau
+
+git log --oneline
+
+atau
+
+git log --oneline -5
+
+Menampilkan 5 commit terakhir.
+
+========================================================
+3. MENAMBAHKAN FILE KE STAGING
+========================================================
+
+Semua file
+
+git add .
+
+Satu file
+
+git add zf_master.py
+
+Folder
+
+git add core/
+
+========================================================
+4. MENYIMPAN PERUBAHAN (COMMIT)
+========================================================
+
+git commit -m "Pesan perubahan"
+
+Contoh
+
+git commit -m "Tambah Position Manager"
+
+git commit -m "Perbaikan Signal Engine"
+
+git commit -m "Fix bug MT5"
+
+========================================================
+5. KIRIM KE GITHUB
+========================================================
+
+git push
+
+atau
+
+git push origin main
+
+========================================================
+6. AMBIL UPDATE DARI GITHUB
+========================================================
+
+git pull
+
+atau
+
+git pull origin main
+
+========================================================
+7. MELIHAT BRANCH
+========================================================
+
+git branch
+
+========================================================
+8. MEMBUAT BRANCH BARU
+========================================================
+
+git checkout -b nama_branch
+
+Contoh
+
+git checkout -b testing
+
+========================================================
+9. PINDAH BRANCH
+========================================================
+
+git checkout main
+
+atau
+
+git switch main
+
+========================================================
+10. MENGHAPUS PERUBAHAN FILE
+========================================================
+
+git restore nama_file
+
+Contoh
+
+git restore zf_master.py
+
+========================================================
+11. MENGEMBALIKAN SEMUA FILE
+========================================================
+
+git restore .
+
+========================================================
+12. MELIHAT PERBEDAAN FILE
+========================================================
+
+git diff
+
+atau
+
+git diff nama_file
+
+========================================================
+13. MELIHAT TAG
+========================================================
+
+git tag
+
+========================================================
+14. MEMBUAT TAG
+========================================================
+
+git tag -a v0.1.0-stable -m "Robot berjalan normal"
+
+========================================================
+15. PUSH TAG KE GITHUB
+========================================================
+
+git push origin v0.1.0-stable
+
+========================================================
+16. MELIHAT REMOTE GITHUB
+========================================================
+
+git remote -v
+
+========================================================
+17. CLONE PROJECT
+========================================================
+
+git clone https://github.com/GUSLABA/ZF_AI_TRADER.git
+
+========================================================
+18. MELIHAT FILE YANG BELUM DI TRACK
+========================================================
+
+git status
+
+Jika muncul
+
+Untracked files
+
+Berarti file baru belum dimasukkan Git.
+
+========================================================
+19. MEMBUAT FILE .gitignore
+========================================================
+
+.gitignore
+
+Contoh isi
+
+__pycache__/
+*.pyc
+logs/
+.env
+
+========================================================
+20. CEK PROJECT SUDAH SINKRON
+========================================================
+
+git status
+
+Hasil yang diharapkan
+
+On branch main
+
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+========================================================
+ALUR KERJA HARIAN
+========================================================
+
+1.
+git pull
+
+↓
+
+2.
+Edit source code
+
+↓
+
+3.
+git status
+
+↓
+
+4.
+git add .
+
+↓
+
+5.
+git commit -m "Pesan perubahan"
+
+↓
+
+6.
+git push
+
+========================================================
+JIKA TERJADI ERROR
+========================================================
+
+1.
+git status
+
+↓
+
+2.
+git diff
+
+↓
+
+3.
+Jika ingin membatalkan
+
+git restore nama_file
+
+atau
+
+git restore .
+
+========================================================
+VERSI PROJECT ZF AI TRADER
+========================================================
+
+v0.1.0-stable
+Robot berjalan normal
+
+↓
+
+v0.1.1
+Position Manager
+
+↓
+
+v0.1.2
+Order Manager
+
+↓
+
+v0.1.3
+Session Manager
+
+↓
+
+v0.1.4
+Risk Manager
+
+↓
+
+v0.2.0
+AI Decision Engine
+
+========================================================
+CATATAN
+========================================================
+
+Selalu lakukan:
+
+Coding
+↓
+
+Testing
+↓
+
+git status
+↓
+
+git add .
+↓
+
+git commit
+↓
+
+git push
+
+Jangan menambah banyak fitur sekaligus.
+
+Satu fitur → Testing → Commit → Push
+
+========================================================
+END
+========================================================
