@@ -225,13 +225,19 @@ class BacktestEngine:
             raise RuntimeError(
                 "MT5 belum terhubung."
             )
-
-        rates = mt5.copy_rates_range(
+        print("Symbol    :", self.symbol)
+        print("Timeframe :", self.timeframe)
+        print("Start     :", self.start_date)
+        print("End       :", self.end_date)
+        rates = mt5.copy_rates_from(
             self.symbol,
             self.timeframe,
-            self.start_date,
-            self.end_date
+            self.end_date,
+            1000
         )
+
+        print("MT5 Last Error :", mt5.last_error())
+        print("Rates          :", rates)
 
         if rates is None:
 
@@ -412,7 +418,7 @@ class BacktestEngine:
                 index
             )
 
-    # ==================================================
+       # ==================================================
     # PROCESS CANDLE
     # ==================================================
 
@@ -420,7 +426,8 @@ class BacktestEngine:
         self,
         history: pd.DataFrame,
         current: pd.Series,
-        index: int
+        index: int,
+        df: pd.DataFrame
     ):
 
         indikator = self.calculate_indicator(
@@ -435,7 +442,7 @@ class BacktestEngine:
             signal
         )
 
-        result = {
+        trade = {
 
             "index": index,
 
@@ -455,7 +462,22 @@ class BacktestEngine:
 
         }
 
-        self.results.append(result)
+        result = self.simulate_trade(
+            trade,
+            df
+        )
+
+        if result is not None:
+
+            trade.update(result)
+
+            trade["result"] = result["result"]
+
+        else:
+
+            trade["result"] = "WAIT"
+
+        self.results.append(trade)
 
     # ==================================================
     # INDICATOR
@@ -1048,4 +1070,104 @@ class BacktestEngine:
         print("             END OF BACKTEST REPORT")
         print("                  ZF AI TRADER")
         print("========================================================\n")
-             
+        # ==================================================
+    # FULL BACKTEST ENGINE
+    # ==================================================
+
+        # ==================================================
+    # RUN BACKTEST
+    # ==================================================
+
+    def run(self):
+
+        self.log("===== BACKTEST START =====")
+
+        self.reset()
+
+        # ----------------------------------------------
+        # Load Historical Data
+        # ----------------------------------------------
+
+        df = self.load_history()
+
+        self.validate_history(df)
+
+        self.print_history_info(df)
+
+        # ----------------------------------------------
+        # Simulation Loop
+        # ----------------------------------------------
+
+        self.log("Memulai simulasi candle...")
+
+        total = len(df)
+
+        start = max(
+            self.candle_limit,
+            200
+        )
+
+        for index in range(start, total):
+
+            history = df.iloc[
+                index - self.candle_limit:index
+            ].copy()
+
+            current = df.iloc[index]
+
+            indikator = self.calculate_indicator(
+                history
+            )
+
+            signal = self.generate_signal(
+                indikator
+            )
+
+            strategy = self.generate_strategy(
+                signal
+            )
+
+            self.results.append({
+
+                "index": index,
+
+                "time": current["time"],
+
+                "open": current["open"],
+
+                "high": current["high"],
+
+                "low": current["low"],
+
+                "close": current["close"],
+
+                "signal": signal,
+
+                "strategy": strategy
+
+            })
+
+            if index % 1000 == 0:
+
+                self.log(
+                    f"Progress : {index:,}/{total:,}"
+                )
+
+        self.calculate_statistics()
+
+        self.print_statistics()
+        self.log(
+            f"Simulation selesai ({len(self.results):,} candle dianalisis)."
+        )
+
+        return self.results
+
+    # ==================================================
+    # QUICK TEST
+    # ==================================================
+
+    def quick_test(self):
+
+        stats = self.run()
+
+        return stats     
