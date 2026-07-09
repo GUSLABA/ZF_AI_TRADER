@@ -31,6 +31,7 @@ from core.indicator_engine import IndicatorEngine
 from core.signal_engine import SignalEngine
 from core.trade_executor import TradeExecutor
 from core.logger import ZFLogger
+from core.report_engine import ReportEngine
 
 from strategy.zf_strategy import ZFStrategy
 
@@ -54,6 +55,7 @@ class ZFMaster:
         self.signal = SignalEngine()
         self.strategy = ZFStrategy()
         self.executor = TradeExecutor()
+        self.report = ReportEngine()
 
     # ==================================================
     # Menjalankan Robot
@@ -72,7 +74,18 @@ class ZFMaster:
             return
 
         self.logger.success("Koneksi MT5 berhasil.")
+        account = mt5.account_info()
 
+        if account:
+
+            self.report.print_account(
+                login=account.login,
+                server=account.server,
+                balance=account.balance,
+                equity=account.equity,
+                leverage=f"1:{account.leverage}",
+                company=getattr(account, "company", "-")
+            )
         # ==================================================
         # Ambil Data Market
         # ==================================================
@@ -90,24 +103,56 @@ class ZFMaster:
             return
 
         self.logger.success(f"Jumlah Candle : {len(df)}")
+        tick = mt5.symbol_info_tick("XAUUSD")
+
+        if tick:
+
+            spread = (tick.ask - tick.bid) * 100
+
+            self.report.print_market(
+                symbol="XAUUSD",
+                timeframe="M5",
+                bid=tick.bid,
+                ask=tick.ask,
+                spread=spread,
+                candle_count=len(df)
+        )
 
         # ==================================================
         # Hitung Indikator
         # ==================================================
 
+        
         self.logger.info("Menghitung indikator...")
 
         indikator = self.indicator.calculate_all(df)
 
-        self.logger.success("EMA13  : OK")
-        self.logger.success("EMA20  : OK")
-        self.logger.success("EMA50  : OK")
-        self.logger.success("EMA200 : OK")
-        self.logger.success("RSI    : OK")
-        self.logger.success("MACD   : OK")
-        self.logger.success("ATR    : OK")
-        self.logger.success("BB     : OK")
-        self.logger.success("STOCH  : OK")
+        self.report.print_indicators(
+
+            ema13=indikator["EMA13"].iloc[-1],
+
+            ema20=indikator["EMA20"].iloc[-1],
+
+            ema50=indikator["EMA50"].iloc[-1],
+
+            ema200=indikator["EMA200"].iloc[-1],
+
+            rsi=indikator["RSI"].iloc[-1],
+
+            macd=indikator["MACD"]["macd"].iloc[-1],
+
+            atr=indikator["ATR"].iloc[-1],
+
+            bb_upper=indikator["BB"]["upper"].iloc[-1],
+
+            bb_middle=indikator["BB"]["middle"].iloc[-1],
+
+            bb_lower=indikator["BB"]["lower"].iloc[-1],
+
+            stoch_k=indikator["STOCH"]["k"].iloc[-1],
+
+            stoch_d=indikator["STOCH"]["d"].iloc[-1]
+        )
 
         # ==================================================
         # Signal Engine
@@ -117,13 +162,13 @@ class ZFMaster:
 
         signal = self.signal.analyze(indikator)
 
-        print("\n========================================")
-        print("SIGNAL ANALYSIS")
-        print("========================================")
-        print(f"Trend      : {signal['trend']}")
-        print(f"Momentum   : {signal['momentum']}")
-        print(f"Volatility : {signal['volatility']}")
-        print("========================================")
+        self.report.print_header()
+
+        self.report.print_signal(
+            trend=signal["trend"],
+            momentum=signal["momentum"],
+            volatility=signal["volatility"]
+        )
 
         self.logger.info(
             f"Signal -> Trend={signal['trend']} | "
@@ -138,20 +183,15 @@ class ZFMaster:
         self.logger.info("Menjalankan ZF Strategy...")
 
         strategy = self.strategy.analyze(signal)
-
-        print("\n========================================")
-        print("ZF STRATEGY")
-        print("========================================")
-        print(f"Decision : {strategy['decision']}")
-        print(f"ZF Score : {strategy['zf_score']}")
-
-        print("\nReason :")
+                
+        self.report.print_strategy(
+            decision=strategy["decision"],
+            zf_score=strategy["zf_score"],
+            reasons=strategy["reason"]
+        )
 
         for reason in strategy["reason"]:
-            print(f"✓ {reason}")
             self.logger.info(reason)
-
-        print("========================================")
 
         self.logger.success(
             f"Decision={strategy['decision']} | "
@@ -187,7 +227,7 @@ class ZFMaster:
         # ==================================================
         # Selesai
         # ==================================================
-
+        self.report.print_footer()
         self.logger.success("Analisis selesai.")
 
         self.mt5.disconnect()
