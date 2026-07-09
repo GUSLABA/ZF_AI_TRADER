@@ -37,7 +37,43 @@ class ZFFilter:
             return False, "Volatility terlalu rendah"
 
         return True, "Volatility OK"
+    # ==================================================
+    # FILTER ATR
+    # ==================================================
 
+    def filter_atr(self, signal):
+
+        atr = signal["atr"]
+
+        if atr < 5:
+
+            return False, "ATR terlalu kecil"
+
+        return True, "ATR OK"
+
+    # ==================================================
+    # FILTER STOCHASTIC
+    # ==================================================
+
+    def filter_stochastic(self, signal):
+
+        stoch_k = signal["stoch_k"]
+
+        trend = signal["trend"]
+
+        if trend in ("BULLISH", "STRONG_BULLISH"):
+
+            if stoch_k > 85:
+
+                return False, "Stochastic terlalu tinggi"
+
+        if trend in ("BEARISH", "STRONG_BEARISH"):
+
+            if stoch_k < 15:
+
+                return False, "Stochastic terlalu rendah"
+
+        return True, "Stochastic OK"
     # ==================================================
     # FILTER MOMENTUM
     # ==================================================
@@ -91,12 +127,22 @@ class ZFFilter:
             status = False
 
         ok, reason = self.filter_volatility(signal)
+        
+        filters.append(reason)
+
+        if not ok:
+            status = False
+        ok, reason = self.filter_atr(signal)
 
         filters.append(reason)
 
         if not ok:
             status = False
+        ok, reason = self.filter_stochastic(signal)
 
+        filters.append(reason)
+        if not ok:
+            status = False
         return {
 
             "passed": status,

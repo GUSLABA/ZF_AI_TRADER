@@ -229,11 +229,11 @@ class BacktestEngine:
         print("Timeframe :", self.timeframe)
         print("Start     :", self.start_date)
         print("End       :", self.end_date)
-        rates = mt5.copy_rates_from(
+        rates = mt5.copy_rates_range(
             self.symbol,
             self.timeframe,
+            self.start_date,
             self.end_date,
-            1000
         )
 
         print("MT5 Last Error :", mt5.last_error())
@@ -382,8 +382,98 @@ class BacktestEngine:
         )
 
         self.simulate(df)
+    # ----------------------------------------------
+    # Entry Simulation
+    # ----------------------------------------------
 
-        self.log("Simulasi selesai.")
+        self.log(
+            "Menjalankan simulasi entry..."
+        )
+
+        xecuted_trade = []
+
+        for trade in self.results:
+
+            result = self.simulate_trade(
+            trade,
+            df
+        )
+
+        # ------------------------------------------
+        # Trade dibuka
+        # ------------------------------------------
+
+        if result is not None:
+
+            trade.update(result)
+
+            trade["result"] = result["result"]
+
+            executed_trade.append(
+            trade
+        )
+
+        # ------------------------------------------
+        # Tidak ada entry
+        # ------------------------------------------
+
+        else:
+
+            trade["result"] = "WAIT"
+
+    # ----------------------------------------------
+    # Simpan hasil trade
+    # ----------------------------------------------
+
+        self.results = executed_trade
+
+        self.log(
+            f"Trade dieksekusi : "
+            f"{len(self.results)}"
+         )
+
+    # ----------------------------------------------
+    # Statistics
+    # ----------------------------------------------
+
+        self.calculate_statistics()
+
+        self.print_statistics()
+        # ----------------------------------------------
+        # Entry Simulation
+        # ----------------------------------------------
+
+        self.log(
+            "Menjalankan simulasi entry..."
+        )
+
+        completed_trade = []
+
+        for trade in self.results:
+
+            result = self.simulate_trade(
+            trade,
+            df
+            )
+
+            if result is not None:
+
+                print(
+                f"{trade['strategy']['decision']} -> "
+                f"{result['result']}"
+                )
+
+            if result is not None:
+
+                trade.update(result)
+
+                completed_trade.append(
+                trade
+                )
+
+            self.results = completed_trade
+
+            self.log("Simulasi selesai.")
 
         return self.results
 
@@ -747,7 +837,8 @@ class BacktestEngine:
 
             "lot": self.default_lot,
 
-            "result": result
+            "result": result,
+            "hour": trade["time"].hour
 
         }
     # ==================================================
@@ -862,7 +953,56 @@ class BacktestEngine:
         else:
 
             drawdown_percent = 0.0
+        open_trade = 0
 
+        for trade in self.results:
+
+            if trade.get("result") == "OPEN":
+
+                open_trade += 1
+
+        print(f"OPEN TRADE : {open_trade}")
+        hour_stats = {}
+
+        for trade in self.results:
+
+            if trade.get("result") not in ["WIN", "LOSS"]:
+
+                continue
+
+            hour = trade["hour"]
+
+            if hour not in hour_stats:
+
+                hour_stats[hour] = {
+
+                    "win": 0,
+
+                    "loss": 0
+
+                }
+
+            if trade["result"] == "WIN":
+
+                hour_stats[hour]["win"] += 1
+
+            else:
+
+                hour_stats[hour]["loss"] += 1
+
+        print("\n===== SESSION STAT =====")
+
+        for hour in sorted(hour_stats):
+
+            print(
+
+                f"{hour:02d}:00 | "
+
+                f"WIN={hour_stats[hour]['win']} | "
+
+                f"LOSS={hour_stats[hour]['loss']}"
+
+            )
         self.statistics = {
 
             "total_trade": total_trade,
@@ -1146,6 +1286,21 @@ class BacktestEngine:
                 "strategy": strategy
 
             })
+            result = self.simulate_trade(
+
+                self.results[-1],
+
+                df
+
+                )
+
+            if result is not None:
+
+                self.results[-1].update(
+
+                    result
+
+                )
 
             if index % 1000 == 0:
 

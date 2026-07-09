@@ -116,5 +116,17 @@ class ZFStrategy:
             "validator_report": validator_result["report"]
 
         }
+        #print(
+        #   f"Filter={filter_result['passed']} | "
+        #   f"Validator={validator_result['valid']} | "
+        #   f"Decision={decision}"
+        #)
+        #print(
 
+        #   f"EMA13={signal['ema13']:.2f} | "
+        #   f"EMA20={signal['ema20']:.2f} | "
+        #    f"RSI={signal['rsi']:.2f} | "
+        #   f"MACD={signal['macd']:.2f}"
+
+        #)
         return result

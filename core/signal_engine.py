@@ -51,21 +51,87 @@ class SignalEngine:
     # Membaca Momentum
     # ==================================================
 
-    def detect_momentum(self, rsi):
+    def detect_momentum(
+        self,
+        rsi,
+        macd,
+        macd_signal
+    ):
 
-        if rsi >= 70:
-            return "OVERBOUGHT"
+            # ------------------------------------------
+            # Sangat bullish
+            # ------------------------------------------
 
-        elif rsi <= 30:
-            return "OVERSOLD"
+            if (
+                rsi >= 65
+                and macd > macd_signal
+            ):
 
-        elif rsi >= 55:
-            return "BULLISH"
+                return "BULLISH"
 
-        elif rsi <= 45:
-            return "BEARISH"
+            # ------------------------------------------
+            # Sangat bearish
+            # ------------------------------------------
 
-        return "NEUTRAL"
+            elif (
+                rsi <= 35
+                and macd < macd_signal
+            ):
+
+                return "BEARISH"
+
+            # ------------------------------------------
+            # Overbought
+            # ------------------------------------------
+
+            elif rsi >= 75:
+
+                return "OVERBOUGHT"
+
+            # ------------------------------------------
+            # Oversold
+            # ------------------------------------------
+
+            elif rsi <= 25:
+
+                return "OVERSOLD"
+
+            # ------------------------------------------
+            # Bias bullish
+            # ------------------------------------------
+
+            elif (
+                rsi >= 55
+                and macd > 0
+            ):
+
+                return "BULLISH"
+
+            # ------------------------------------------
+            # Bias bearish
+            # ------------------------------------------
+
+            elif (
+                rsi <= 45
+                and macd < 0
+            ):
+
+                return "BEARISH"
+
+            return "NEUTRAL"
+            if rsi >= 70:
+                return "OVERBOUGHT"
+
+            elif rsi <= 30:
+                return "OVERSOLD"
+
+            elif rsi >= 55:
+                return "BULLISH"
+
+            elif rsi <= 45:
+                return "BEARISH"
+
+            return "NEUTRAL"
 
     # ==================================================
     # Membaca Volatilitas
@@ -95,7 +161,13 @@ class SignalEngine:
         )
 
         momentum = self.detect_momentum(
-            indicators["RSI"].iloc[-1]
+
+            indicators["RSI"].iloc[-1],
+
+            indicators["MACD"]["macd"].iloc[-1],
+
+            indicators["MACD"]["signal"].iloc[-1]
+
         )
 
         volatility = self.detect_volatility(
@@ -103,7 +175,56 @@ class SignalEngine:
         )
 
         return {
-            "trend": trend,
+
+            # ------------------------------------------
+            # HASIL ANALISIS
+            # ------------------------------------------
+
+             "trend": trend,
+
             "momentum": momentum,
-            "volatility": volatility
+
+             "volatility": volatility,
+
+            # ------------------------------------------
+            # LEVEL 1
+            # EMA
+            # ------------------------------------------
+
+            "ema13": indicators["EMA13"].iloc[-1],
+
+             "ema20": indicators["EMA20"].iloc[-1],
+
+             "ema50": indicators["EMA50"].iloc[-1],
+
+             "ema200": indicators["EMA200"].iloc[-1],
+
+            # ------------------------------------------
+            # LEVEL 2
+            # RSI + MACD
+            # ------------------------------------------
+
+            "rsi": indicators["RSI"].iloc[-1],
+
+            "macd": indicators["MACD"]["macd"].iloc[-1],
+
+            "macd_signal": indicators["MACD"]["signal"].iloc[-1],
+
+            # ------------------------------------------
+            # LEVEL 3
+            # ATR + BB + STOCH
+            # ------------------------------------------
+
+            "atr": indicators["ATR"].iloc[-1],
+
+            "bb_upper": indicators["BB"]["upper"].iloc[-1],
+
+            "bb_middle": indicators["BB"]["middle"].iloc[-1],
+
+            "bb_lower": indicators["BB"]["lower"].iloc[-1],
+
+            "stoch_k": indicators["STOCH"]["k"].iloc[-1],
+
+            "stoch_d": indicators["STOCH"]["d"].iloc[-1]
+
         }

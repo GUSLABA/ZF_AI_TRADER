@@ -153,8 +153,8 @@ ATR_LOW = -10
 # ZF SCORE THRESHOLD
 # ==================================================
 
-BUY_SCORE = 40
-SELL_SCORE = -40
+BUY_SCORE = 55
+SELL_SCORE = -55
 
-WAIT_MIN = -39
-WAIT_MAX = 39
+WAIT_MIN = -54
+WAIT_MAX = 54

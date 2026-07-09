@@ -53,8 +53,41 @@ class ZFScore:
     def calculate(self, signal):
 
         trend = signal["trend"]
+        # ==========================================
+        # LEVEL 1 : TREND ENGINE
+        # ==========================================
+
+        trend_score = 0
+
+        if trend == "STRONG_BULLISH":
+
+            trend_score += 40
+
+        elif trend == "BULLISH":
+
+            trend_score += 25
+
+        elif trend == "STRONG_BEARISH":
+
+            trend_score -= 40
+
+        elif trend == "BEARISH":
+
+            trend_score -= 25
+
+        else:
+
+            trend_score += 0
         momentum = signal["momentum"]
         volatility = signal["volatility"]
+        # ==================================================
+        # LEVEL 1 DATA
+        # ==================================================
+
+        ema13 = signal["ema13"]
+        ema20 = signal["ema20"]
+        ema50 = signal["ema50"]
+        ema200 = signal["ema200"]           
 
         trend_score = 0
         momentum_score = 0
@@ -63,42 +96,89 @@ class ZFScore:
         reason = []
 
         # ==================================================
-        # TREND
+        # LEVEL 1 : EMA TREND SCORE
         # ==================================================
 
-        if trend == "STRONG_BULLISH":
+        if ema13 > ema20 > ema50 > ema200:
 
-            trend_score = TREND_STRONG_BULLISH
+            trend_score = 40
+
             reason.append(
-                f"Trend Strong Bullish ({trend_score:+d})"
+
+                f"EMA13 > EMA20 > EMA50 > EMA200 "
+
+                f"({trend_score:+d})"
+
             )
 
-        elif trend == "BULLISH":
+        elif ema13 > ema20 > ema50:
 
-            trend_score = TREND_BULLISH
+            trend_score = 30
+
             reason.append(
-                f"Trend Bullish ({trend_score:+d})"
+
+                f"EMA13 > EMA20 > EMA50 "
+
+                f"({trend_score:+d})"
+
             )
 
-        elif trend == "STRONG_BEARISH":
+        elif ema13 > ema20:
 
-            trend_score = TREND_STRONG_BEARISH
+            trend_score = 20
+
             reason.append(
-                f"Trend Strong Bearish ({trend_score:+d})"
+
+                f"EMA13 > EMA20 "
+
+                f"({trend_score:+d})"
+
             )
 
-        elif trend == "BEARISH":
+        elif ema13 < ema20 < ema50 < ema200:
 
-            trend_score = TREND_BEARISH
+            trend_score = -40
+
             reason.append(
-                f"Trend Bearish ({trend_score:+d})"
+
+                f"EMA13 < EMA20 < EMA50 < EMA200 "
+
+                f"({trend_score:+d})"
+
+            )
+
+        elif ema13 < ema20 < ema50:
+
+            trend_score = -30
+
+            reason.append(
+
+                f"EMA13 < EMA20 < EMA50 "
+
+                f"({trend_score:+d})"
+
+             )
+
+        elif ema13 < ema20:
+
+            trend_score = -20
+
+            reason.append(
+
+                f"EMA13 < EMA20 "
+
+                f"({trend_score:+d})"
+
             )
 
         else:
 
-            trend_score = TREND_SIDEWAYS
+            trend_score = 0
+
             reason.append(
-                f"Trend Sideways ({trend_score:+d})"
+
+                f"EMA Sideways ({trend_score:+d})"
+
             )
 
         # ==================================================
